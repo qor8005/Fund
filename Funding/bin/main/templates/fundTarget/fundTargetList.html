@@ -1,0 +1,144 @@
+<!-- 지정 펀딩 리스트 -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Funding</title>
+
+	<!-- CSS -->
+    <link rel="stylesheet" href="../../static/css/fundTarget/fundTargetList.css" th:href="@{/css/fundTarget/fundTargetList.css}">
+
+	<!-- favicon -->
+    <link rel="shortcut icon" href="/img/favicon/ms-icon-310x310.png" type="image/x-icon" />
+
+	<!-- fontawsome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+</head>
+<body>
+	<div>
+		<nav th:replace="/sidebar/sidebar"></nav>
+	</div>
+	
+    <!-- 홈페이지 상단 nav -->
+    <header th:replace="/main/nav"></header>
+
+    <section>
+		<div class="title">
+			<h2>지정 펀딩</h2>
+		</div>
+
+		<div class="categorie">
+			<form>
+				<a th:each="cate : ${cList}" class="cate" th:text="${cate.categorieName}"
+				th:href="@{|?cate=${cate.id}&page=0|}"></a>
+			</form>
+		</div>
+
+		<div class="list_form" th:each="target, i : ${targetList}">
+			<div th:text="${i.count}" hidden></div>
+			<div class="con_list">
+				<a href="../fundTarget/fundTargetDetail.html" th:href="@{|/fundTarget/detail/${target.id}|}">
+					<div class="image">
+						<div th:if="${target.imgPath != null}">
+							<img th:src="${target.imgPath}" width="150px" height="215px" center>
+						</div>
+						<div th:if="${target.imgPath == null}">
+							<img th:src="|/fundTarget/img/${target.id}|" width="150px" height="215px" center>
+						</div>
+					</div>
+				</a>
+				<div class="con">
+					<div class="status">
+						<p th:text="${target.status}">상태</p>
+					</div>
+					
+					<div class="con_title">
+						<a href="../fundTarget/fundTargetDetail.html" th:href="@{|/fundTarget/detail/${target.id}|}">
+							<h3 th:text="${target.subject}">공연 이름</h3>
+						</a>
+						<p class="view" th:text="${target.artiest}">아티스트</p>
+					</div>
+					
+					<div class="con_detail">
+						<div class="view">
+							<label for="place">장소</label>
+							<p th:text="${target.place}">장소</p>
+						</div>
+						
+						<div class="view">
+							<label for="startDate">공연일</label>
+							<p th:text="${#temporals.format(target.startDate, 'yyyy-MM-dd (E) HH:mm')}">공연 시작</p>
+						</div>
+						
+						<div class="view">
+							<label for="fundDurationS">펀딩 기간</label>
+							<p th:text="${#temporals.format(target.fundDurationS, 'yyyy-MM-dd (E)')} + ' ~ '
+								+ ${#temporals.format(target.fundDurationE, 'yyyy-MM-dd (E)')}">펀딩 기간</p>
+						</div>
+						
+						<!-- <div>
+							<div th:if="${target.fundUser.nickname != null}">
+								<div th:text="|글 등록한 사람 : ${target.fundUser.nickname}|"></div>
+							</div>
+						</div> -->
+					</div>
+				</div>
+				<div class="graph">
+					<div class="graph_view">
+						<p>진행도</p>
+						<h1 th:text="|${target.fundCurrent * 100 / target.fundAmount}%|"></h1>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 페이징 -->
+		<div class="page" th:if="${!targetList.isEmpty()}">
+			<div th:if="${targetList.number > 0}">
+				<a th:href="@{|?cate=${cate}&page=${targetList.number-1}|}">
+					<i class="fas fa-chevron-left"></i>
+				</a>
+			</div>
+			<div th:each="page : ${#numbers.sequence(0,targetList.totalPages-1)}"
+				th:if="${targetList.number-3 < page and targetList.number+3 > page}">
+				<a th:classappend="${page == targetList.number} ? 'active'" th:text="${page+1}" 
+				th:href="@{|?cate=${cate}&page=${page}|}"></a>
+			</div>
+			<div th:if="${targetList.number < targetList.totalPages-1}">
+				<a th:href="@{|?cate=${cate}&page=${targetList.number+1}|}">
+					<i class="fas fa-chevron-right"></i>
+				</a>
+			</div>
+		</div>
+		<!-- //페이징 -->
+		<div sec:authorize="hasRole('ROLE_USER')">
+			<a class="btn_create" href="fundTargetForm.html" th:href="@{/fundTarget/form}">펀딩 만들기</a>
+		</div>
+    </section>
+    
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script>
+    	//url에서 카테고리 값 가져와서 active 추가해주기
+    	let url = window.location.search
+    	let Params = new URLSearchParams(url)
+    	let cate = 0
+    	cate = parseInt(Params.get('cate')) - 1
+    	console.log("뺴고나서 값 : " + cate)
+    	let cateList = document.querySelectorAll('.cate')
+    	
+    	document.addEventListener("DOMContentLoaded", addActive)
+    	
+    	function addActive(){
+    		cateList.forEach(function(e){
+        		e.classList.remove('active')
+        	})
+        	
+			cateList[cate].classList.add('active')
+			
+    	}
+    </script>
+
+</body>
+</html>

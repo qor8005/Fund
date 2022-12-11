@@ -1,0 +1,159 @@
+<!-- 미지정 펀딩 리스트 -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Funding</title>
+
+	<!-- CSS -->
+    <link rel="stylesheet" href="../../static/css/fundBoard/fundBoard_list.css" th:href="@{/css/fundBoard/fundBoard_list.css}">
+
+	<!-- favicon -->
+    <link rel="shortcut icon" href="/img/favicon/ms-icon-310x310.png" type="image/x-icon" />
+
+	<!-- fontawsome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+</head>
+<body>
+	<div>
+		<nav th:replace="/sidebar/sidebar"></nav>
+	</div>
+
+    <!-- 홈페이지 상단 nav-->
+	<header th:replace="/main/nav"></header>
+
+	<section>
+		<!-- 타이틀 -->
+		<div class="title">
+			<h2>미지정 펀딩</h2>
+		</div>
+
+		<!-- 카테고리 -->
+		<div class="categorie">
+			<ul>
+				<li>
+					<a class="cate"
+						th:each="categorie, loop : ${categorieList}"
+						th:text="${categorie.categorieName}"
+						th:href="@{|/fundBoard/categorie/${categorie.id}|}">
+					</a>
+				</li>
+			</ul>
+		</div>
+		
+		<!-- 공연 리스트 -->
+		<div class="list_form" th:each="fundBoard , loop : ${fundBoardList}">
+			<div class="con_list">
+				<!-- 이미지 -->
+				<div class="image">
+					<a th:href="@{|/fundBoard/detail/${fundBoard.id}|}">
+						<div th:if="${fundBoard.imgPath != null}">
+							<img th:src="${fundBoard.imgPath}" width="150px" height="215px" center>
+						</div>
+						<div th:if="${fundBoard.filePath != null}">
+							<img th:src="|/fundBoard/img/${fundBoard.id}|" width="150px" height="215px" center>
+						</div>
+					</a>
+				</div>
+
+				<!-- 공연 정보 -->
+				<div class="con">
+					<!-- 공연 진행 상태 -->
+					<div class="status">
+						<p th:text="${fundBoard.state}">상태</p>
+					</div>
+
+					<!-- 공연 이름 -->
+					<div class="con_title">
+						<a th:href="@{|/fundBoard/detail/${fundBoard.id}|}">
+							<h3 th:text="${fundBoard.subject}">공연 이름</h3>
+						</a>
+					</div>
+
+					<!-- 공연 상세정보 -->
+					<div class="con_detail">
+						<div class="view">
+							<label for="place">장소</label>
+							<p th:text="${fundBoard.place}">장소</p>
+						</div>
+
+						<div class="view">
+							<label for="startDate">공연일</label>
+							<p th:text="${#temporals.format(fundBoard.startDateTime, 'yyyy-MM-dd (E) HH:mm')}">공연일</p>
+						</div>
+
+						<div class="view">
+							<label for="fundDuration">펀딩 기간</label>
+							<p th:text="|${#temporals.format(fundBoard.createDate, 'yyyy-MM-dd (E)')}
+									~ ${#temporals.format(fundBoard.fundDuration, 'yyyy-MM-dd (E)')}|"></p>
+						</div>
+
+					</div>
+					<!-- // 공연 상세정보 -->
+				</div>
+
+				<!-- 펀딩 진행도 -->
+				<div class="graph">
+					<div class="graph_view">
+						<p>진행도</p>
+						<h1 th:text="|${fundBoard.fundCurrent * 100 / fundBoard.fundAmount}%|">진행도</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- // 공연 리스트 -->
+
+		<!-- 페이징 -->
+		<div class="paging" th:if="${!fundBoardList.isEmpty()}">
+			<!-- 이전 페이지가 없으면 비활성화 -->
+			<div th:if="${fundBoardList.number > 0}">
+				<a th:href="@{|?page=${fundBoardList.number-1}|}">
+					<i class="fas fa-chevron-left"></i>
+				</a>
+			</div>
+
+			<!-- 페이지 리스트 루프 -->
+			<!-- 현재 페이지와 같으면 active 적용-->
+			<div th:each="page: ${#numbers.sequence(0, fundBoardList.totalPages-1)}"
+				th:if="${page >= fundBoardList.number-5 and page <= fundBoardList.number+4}">
+				<a th:classappend="${page == fundBoardList.number} ? 'active'"
+				th:text="${page+1}" th:href="@{|?page=${page}|}"></a>
+			</div>
+
+			<!-- 다음 페이지가 없으면 비활성화 -->
+			<div th:if="${fundBoardList.number < fundBoardList.totalPages-1}">
+				<a th:href="@{|?page=${fundBoardList.number+1}|}">
+					<i class="fas fa-chevron-right"></i>
+				</a>
+			</div>
+		</div>
+		<!-- // 페이징 -->
+		
+		<!-- 공연 등록하기 -->
+		<div sec:authorize="hasRole('ROLE_USER')">
+			<a id="btn1" class="btn_create" href="/fundBoard/create">등록하기</a>
+		</div>
+	</section>
+
+	<script>
+		let url = window.location.href;
+		let cate = url.split('/')
+		cate = parseInt(cate[5])-1
+		
+		let cateList = document.querySelectorAll('.cate');
+		document.addEventListener("DOMContentLoaded", addActive);
+
+		function addActive() {
+			cateList.forEach(function(e) {
+				e.classList.remove('active');
+			})
+        	cateList[cate].classList.add('active')
+		}
+
+	</script>
+
+	
+</body>
+</html>
