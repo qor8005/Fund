@@ -1,0 +1,207 @@
+
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<link rel="stylesheet" href="/css/sidebar/sidebar.css">
+
+<div class="sidebarbtn" sec:authorize="isAuthenticated()">
+	<h1>&lt;&lt;</h1>
+</div>
+<div class="sidebar">
+	<div sec:authorize="isAuthenticated()">
+		<input hidden class="user" sec:authorize="hasRole('ROLE_USER')" th:value="${#authentication.getPrincipal().getUsername()}"/>
+		<input hidden class="artist" sec:authorize="hasRole('ROLE_ARTIST')" th:value="${#authentication.getPrincipal().getUsername()}"/>
+	</div>
+	<!--  유저일떄 화면    -->
+	<div sec:authorize="hasRole('ROLE_USER')">
+		<h4>알림</h4>
+		<div class="alert"></div>
+	
+		<hr/>
+	
+		<h4>현재 펀딩중인 목록(지정)</h4>
+		<div class="fundTargetList"></div>
+
+		<hr/>
+		
+		<h4>현재 펀딩중인 목록(미지정)</h4>
+		<div class="fundList"></div>
+	</div>
+	
+	<!-- 아티스트 일 떄 -->
+	<div sec:authorize="hasRole('ROLE_ARTIST')">
+		<h4>현재 신청한 펀딩목록</h4>
+		<div class="fundList2"></div>
+
+		<hr/>
+		
+		<h4>공연 디테일 지정</h4>
+		<div class="fundModify"></div>
+	</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<script>
+
+	$(document).ready(function(){
+		let user = $(".user").val()
+		let artist = $(".artist").val()
+		let token = $("meta[name='_csrf']").attr("content");
+		let header = $("meta[name='_csrf_header']").attr("content");
+
+		if(user != null){
+			
+			//알림 불러오는 ajax
+			$.ajax({
+				url : '/alert/show'
+				,data : "user=" + user
+				,beforeSend : function(xhr){
+					xhr.setRequestHeader(header, token);
+				}
+				,success : function(result){
+					$.each(result, function(index, item){	
+						if(item.type == "댓글"){
+							$('.alert').append(
+								"<a href=\"" + item.url + "?alertId=" + item.alertId + "\">"
+								+ "<div class=\"alertbox\">"
+								+ item.Guestname + "님이 댓글을 달았습니다."
+								+ "<div class=\"alert_con\">" + item.content
+								+ "</div></div></a>")
+						}else if(item.type == "마감"){
+							$('.alert').append(
+								"<a href=\"" + item.url + "?alertId=" + item.alertId + "\">"
+								+ "<div class=\"alertbox\">"
+								+ "<div class=\"alert_conS\">" + item.content
+								+ "</div></div></a>")
+						}else if(item.type == "펀딩"){
+							$('.alert').append(
+								"<a href=\"" + item.url + "?alertId=" + item.alertId + "\">"
+								+ "<div class=\"alertbox\">"
+								+ "<div class=\"alert_con\">" + item.content
+								+ "</div></div></a>")
+						}else if(item.type == "취소"){
+							$('.alert').append(
+								"<a href=\"" + "/?alertId=" + item.alertId + "\">"
+								+ "<div class=\"alertbox\">"
+								+ "<div class=>\"alert_con\">" + item.content
+								+ "</div></div></a>")
+						}
+					})
+				}
+			})
+			
+			//현재 지정펀딩목록 불러오는 ajax
+			$.ajax({
+				url : '/show/fundList'
+				,data : "user=" + user
+				,beforeSend : function(xhr){
+					xhr.setRequestHeader(header, token);
+				}
+				,success : function(result){
+					$.each(result, function(index, item){					
+						$('.fundTargetList').append(
+							"<a href=\"" + item.url + "\">"
+							+ "<div class=\"alertbox\">"
+							+ "<div class=\"alert_con\">"
+							+ item.fundName + "</div>"
+							+ "<div class=\"alert_status\">"
+							+ item.status + " "
+							+ item.percent + "</div>"
+							+ "</div></a>")
+					})
+				}
+			})
+			
+			//현재 미지정펀딩목록 불러오는 ajax
+			$.ajax({
+				url : '/fundList/show'
+				,data : "user=" + user
+				,beforeSend : function(xhr){
+					xhr.setRequestHeader(header, token);
+				}
+				,success : function(result){
+					$.each(result, function(index, item){					
+						$('.fundList').append(
+							"<a href=\"" + item.url + "\">"
+							+ "<div class=\"alertbox\">"
+							+ "<div class=\"alert_con\">"
+							+ item.fundName + "</div>"
+							+ "<div class=\"alert_status\">"
+							+ item.status + " "
+							+ item.percent + "</div>"
+							+ "</div></a>")
+					})
+				}
+			})
+			
+			
+			$.ajax({
+				url : '/alert/update'
+				,data : "user=" + user
+				,success : function(result){
+					console.log(result)
+				}
+				,error: function(){
+					alert("에러발생")
+				}
+			})
+		}else if(artist != null){
+			//아티스트 참여목록 불러오는 ajax
+			$.ajax({
+				url : '/fundArtistList/show'
+				,data : "artist=" + artist
+				,beforeSend : function(xhr){
+					xhr.setRequestHeader(header, token);
+				}
+				,success : function(result){
+					$.each(result, function(index, item){					
+						$('.fundList2').append(
+							"<a href=\"" + item.url + "\">"
+							+ "<div class=\"alertbox\">"
+							+ "<div class=\"alert_con\">"
+							+ item.fundName + "</div>"
+							+ "<div class=\"alert_status\">"
+							+ item.status + " "
+							+ item.percent + "</div>"
+							+ "</div></a>")
+					})
+				}
+			})
+			
+			//알림 불러오는 ajax
+			$.ajax({
+				url : '/alert/show'
+				,data : "user=" + artist
+				,beforeSend : function(xhr){
+					xhr.setRequestHeader(header, token);
+				}
+				,success : function(result){
+					$.each(result, function(index, item){	
+						if(item.type == "수정"){
+							$('.fundModify').append(
+								"<a href=\"" + item.url + "?alertId=" + item.alertId + "\">"
+								+ "<div class=\"alertbox\">"
+								+ item.content
+								+ "</div></a>")
+						}
+					})
+				}
+			})
+		}
+	})
+	
+	// 사이드바 액션
+	$(document).ready(function(){
+		$(".sidebarbtn").click(function(){
+			if($(".sidebar").hasClass('active') == true){
+				$(".sidebar").removeClass('active')
+				$(".sidebarbtn").removeClass('active')
+				$(".sidebarbtn h1").html("<<")
+			}else{
+				$(".sidebar").addClass('active')
+				$(".sidebarbtn").addClass('active')
+				$(".sidebarbtn h1").html(">>")
+			}
+		})
+	})
+</script>
+

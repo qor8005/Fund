@@ -1,0 +1,79 @@
+section {position: relative;}
+
+.wrap {
+    display: flex;
+    justify-content: center;
+    width: 1100px;
+}
+
+.myinfo {width: 600px;}
+
+.title {padding: 30px 0;}
+
+.view {margin-bottom: 10px;}
+
+.view p {
+    width: 100px;
+    font-weight: bold;
+}
+
+.view button {
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #838383;
+    color: #fff;
+    letter-spacing: 2px;
+    line-height: 50%;
+    transition: 0.3s;
+}
+
+.view button:hover {
+    background: #5c5c5c;
+}
+
+.myinfo button{
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #838383;
+    color: #fff;
+    letter-spacing: 2px;
+    line-height: 50%;
+    transition: 0.3s;
+}
+
+.myinfo button:hover {
+	background: #5c5c5c;
+}
+
+.view input {
+    margin: 3px 0;
+    height: 30px;
+}
+
+#changePwdBtn, #mobileBtn2{
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #838383;
+    color: #fff;
+    letter-spacing: 2px;
+    line-height: 50%;
+    transition: 0.3s;
+}
+
+#changePwdBtn:hover, #mobileBtn2:hover {
+	background: #5c5c5c;
+}
+
+.error {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
