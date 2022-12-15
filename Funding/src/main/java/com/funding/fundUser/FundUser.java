@@ -11,8 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.funding.alert.Alert;
 import com.funding.answer.Answer;
-import com.funding.answerAns.AnswerAns;
 import com.funding.fundBoard.FundBoard;
 import com.funding.fundList.FundList;
 import com.funding.fundTargetList.FundTargetList;
@@ -48,12 +48,12 @@ public class FundUser {
 	private List<Answer> Answer;
 
 	@OneToMany(mappedBy = "fundUser", cascade = CascadeType.REMOVE)
-	private List<AnswerAns> AnswerAns;
-
-	@OneToMany(mappedBy = "fundUser", cascade = CascadeType.REMOVE)
 	private List<FundList> FundList;
 
 	@OneToMany(mappedBy = "fundUser", cascade = CascadeType.REMOVE)
 	private List<FundTargetList> fundTargetList;
+	
+	@OneToMany(mappedBy = "guestUser", cascade = CascadeType.REMOVE)
+	private List<Alert> alertList;
 	
 }

@@ -20,6 +20,7 @@
     <section>
         <!-- 콘서트 정보 -->
         <div class="con">
+            <!-- 좌측 -->
             <div class="left">
                 <a class="cate" href="/fundTarget" th:text="|지정펀딩 > ${fundBoardTarget.categorie.categorieName}|">
                     지정 펀딩 > 카테고리1</a>
@@ -33,11 +34,16 @@
 					</div>
                 </div>
             </div>
+            <!-- //좌측 -->
+
+            <!-- 우측 -->
             <div class="right">
+				<!-- 공연 상세 정보 -->
                 <div class="view">
                     <div class="status">
                         <div th:text="${fundBoardTarget.status}">상태</div>
                     </div>
+                    <!-- 삭제 버튼 -->
                     <div sec:authorize="hasRole('ROLE_USER')">
 	                    <div th:if="${fundBoardTarget.fundUser != null and fundBoardTarget.fundUser.username == #authentication.getPrincipal().getUsername()}">
 	                    	<div th:if="${!fundBoardTarget.status.toString().equals('100%⇑⇑⇑')}">
@@ -46,6 +52,7 @@
 	                    </div>
                     </div>
                 </div>
+                
                 <div class="view">
                     <label for="writer">작성자</label>
                     <p th:text="${fundBoardTarget.fundUser.username}">글쓴이</p>
@@ -142,12 +149,13 @@
             <div class="title">
                 <h2>댓글</h2>
             </div>
-            
-            <div class="cmt_form">
-                <form th:action="@{|/answer/target/create/${fundBoardTarget.id}|}" method="POST">
-                    <textarea class="int_cmt" name="content" placeholder="내용을 입력하세요."></textarea>
-                    <button class="btn_cmt" type="submit">등록</button>
-                </form>
+            <div sec:authorize="isAuthenticated()">
+	            <div class="cmt_form">
+	                <form th:action="@{|/answer/target/create/${fundBoardTarget.id}|}" method="POST">
+	                    <textarea class="int_cmt" name="content" placeholder="내용을 입력하세요."></textarea>
+	                    <button class="btn_cmt" type="submit">등록</button>
+	                </form>
+	            </div>
             </div>
             
             <div class="cmt_view" th:each="answer : ${aList}">

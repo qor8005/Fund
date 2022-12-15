@@ -17,10 +17,24 @@ public class SelfBoardService {
 	private final SelfBoardRepository selfBoardRepository;
 	private final FundArtistRepository fundArtistRepository;
 	
+	//pr 수정하기
+	public void modify(String subject, String content, String genre, String path, FundArtist artiest) {
+		
+		SelfBoard selfBoard = this.selfBoardRepository.findByFundArtist(artiest).get();
+		selfBoard.setSubject(subject);
+		selfBoard.setContent(content);
+		selfBoard.setGenre(genre);
+		selfBoard.setFilePath(path);
+		selfBoard.setFundArtist(artiest);
+		
+		selfBoardRepository.save(selfBoard);
+	}
+	
 	//pr 작성하기
 	public void create(String subject, String content, String genre, String path, FundArtist artiest) {
-		
+
 		SelfBoard selfBoard = new SelfBoard();
+		
 		selfBoard.setSubject(subject);
 		selfBoard.setContent(content);
 		selfBoard.setGenre(genre);
@@ -48,6 +62,12 @@ public class SelfBoardService {
 	public SelfBoard findByFundArtist(FundArtist fundArtist) {
 			
 		return this.selfBoardRepository.findByFundArtist(fundArtist).get();
+			
+	}
+	
+	public Optional<SelfBoard> findByFundArtist2(FundArtist fundArtist) {
+		
+		return this.selfBoardRepository.findByFundArtist(fundArtist);
 			
 	}
 
